@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de tarefas</title>
+    <!-- CSS do Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+</head>
+
+<body>
+    <h1 class="text-center mt-3">Lista de tarefas</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="mb-3">
+                    <label for="tarefa" class="form-label">Tarefa</label>
+                    <input type="text" class="form-control" id="tarefa" placeholder="Digite a tarefa">
+                    <label for="tempo" class="form-label">Tempo</label>
+                    <input type="text" class="form-control" id="tempo" placeholder="Digite o tempo necessario (minutos)">
+                </div>
+                </div>
+                <button type="button" class="btn btn-primary" id="btnAdicionar">Adicionar</button>
+            </div>
+        </div>
+        <hr>
+        <ul id="listaUl">
+            <li>Tarefa 1</li>
+            <li>Tarefa 2</li>
+            <li>Tarefa 3</li>
+        </ul>
+        <hr>
+        Tempo total de tarefas: <span id="tempoTotal">0</span> minutos
+    </div>
+    <!-- JS do Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+        crossorigin="anonymous"></script>
+    <script>
+        let listaTarefas = [
+            { id: 1, tarefa: 'Criar HTML', feita: false, tempo: 30 },
+            { id: 2, tarefa: 'Criar JS', feita: false, tempo: 15 },
+            { id: 3, tarefa: 'Entregar a tarefa', feita: false, tempo: 14 },
+        ];
+
+        function addTarefa(tarefa) {
+            listaTarefas.push(tarefa);
+            renderizarTarefas();
+        }
+
+        function removerTarefa(id) {
+            listaTarefas = listaTarefas.filter(tarefa => tarefa.id !== id);
+            renderizarTarefas();
+        }
+
+        function fazerTarefa(id, botao){
+            listaTarefas = listaTarefas.map(tarefa => {
+                if(tarefa.id === id){
+                    tarefa.feita = !tarefa.feita;
+                }
+                return tarefa;
+            });
+            
+            if(botao.innerText === 'Fazer'){
+                botao.innerText = 'Desfazer';
+                botao.classList.remove('btn-warning');
+                botao.classList.add('btn-success');
+            } else {
+                botao.innerText = 'Fazer';
+                botao.classList.remove('btn-success');
+                botao.classList.add('btn-warning');                
+            }
+        }
+
+        function renderizarTarefas() {
+            let listaUl = document.getElementById('listaUl');
+            listaUl.innerHTML = '';
+            listaTarefas.map(tarefa => {
+                let li = document.createElement('li');
+                li.classList.add('my-3');
+                li.innerHTML = tarefa.tarefa;
+                li.innerHTML += ` - ${tarefa.tempo} minutos`;
+                
+                if(tarefa.feita == false){
+                    li.innerHTML += ` <button type="button" 
+                                class="btn btn-sm btn-warning" 
+                                onclick="fazerTarefa(${tarefa.id},this)">
+                                Fazer
+                                </button>`;
+                } else{
+                    li.innerHTML += ` <button type="button" 
+                                class="btn btn-sm btn-success" 
+                                onclick="fazerTarefa(${tarefa.id},this)">
+                                Desfazer
+                                </button>`;
+                }
+
+
+                li.innerHTML += ` <button type="button" 
+                                class="btn btn-sm btn-danger" 
+                                onclick="removerTarefa(${tarefa.id})">
+                                Remover
+                                </button>`;
+                listaUl.appendChild(li);
+            });
+            calcularTempo();
+        }
+
+        function calcularTempo(){
+            const somaTempo = listaTarefas.reduce((acumulador, item) => {
+                return acumulador + item.tempo;
+            }, 0);
+            console.log(somaTempo);
+
+            document.getElementById("tempoTotal").innerText = somaTempo;
+        }
+
+        renderizarTarefas();
+
+        const btnAdicionar = document.getElementById('btnAdicionar');
+        btnAdicionar.addEventListener('click', function () {
+            const tarefa = document.getElementById('tarefa').value;
+            const tempo = document.getElementById('tempo').value;
+            addTarefa(
+                {
+                    id: listaTarefas.length + 1,
+                    tarefa: tarefa,
+                    feita: false,
+                    tempo: parseInt(tempo)
+                });
+        });
+
+
+    </script>
+</body>
+
+</html>
